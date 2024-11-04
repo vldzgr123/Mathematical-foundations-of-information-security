@@ -20,7 +20,7 @@ while True:
             key = int(input()) % 32
             print("Введите текст:")
             text = input()
-            file = open("encrypt.txt", "w", encoding="utf-8-sig")
+            file = open("lab_1/encrypt.txt", "w", encoding="utf-8-sig")
             file.write(str(encrypt(text, key)) + " " + str(key))
             file.close()
         case 2:
@@ -29,7 +29,7 @@ while True:
             key = int(input()) % 32
             print("Введите текст:")
             text = input()
-            file = open("decipher.txt", "w", encoding="utf-8-sig")
+            file = open("lab_1/decipher.txt", "w", encoding="utf-8-sig")
             file.write(str(decipher(text, key)) + " " + str(key))
             file.close()
         case 3:
