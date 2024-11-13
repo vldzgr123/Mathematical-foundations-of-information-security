@@ -1,6 +1,7 @@
 from function.encryption import *
 from os import system
 import sys
+import pprint
 
 
 def clear():
@@ -11,8 +12,11 @@ clear()
 while True:
     print("1.Найти обратное числу по модулю")
     print("2.Найти решение сравнения")
-    print("3.Подобрать ключ")
-    print("4.Выход")
+    print("3.Найти решение системы сравнений")
+    print("4.Получить частоту появления букв")
+    print("5.Получить предположения")
+    print("6.Расшифровать текст без ключа")
+    print("7.Выход")
     match (int(input())):
         case 1:
             clear()
@@ -24,20 +28,47 @@ while True:
             input()
         case 2:
             clear()
-            print("Введите a, b и m через пробел:")
+            print("Введите a, b и m через пробел (из выражения (ax)mode m ≡ b)):")
             a, b, m = input().split(" ")
             print(comparison_solution(int(a), int(b), int(m)))
             input()
         case 3:
             clear()
+            print("Введите модуль:")
+            m = input()
+            print("Введите a и b через пробел (из выражения (ax + y)mod m ≡ b):")
+            a, b = input().split(" ")
+            print("Введите c и d через пробел (из выражения (cx + y)mod m ≡ d):")
+            c, d = input().split(" ")
+            print(comparison_solution_system(int(a), int(b), int(c), int(d)))
+            input()
+        case 4:
+            clear()
             print("Введите текст:")
             text = input()
-            decipherWithoutKey(text)
-        case 4:
+            most_pop_let, let_count, _ = frequency_analysis(text)
+            print(f"Самые часто встречающихся буквы {most_pop_let}")
+            print("Таблица частот")
+            pprint.pprint(let_count, width=40)
+            input()
+        case 5:
+            clear()
+            print("Введите текст:")
+            text = input()
+            for i in range(m * (m-1)):
+                hypothesis(text)
+            input()
+        case 6:
+            clear()
+            print("Введите текст:")
+            text = input()
+            decipher_without_key(text)
+            input()
+        case 7:
             break
         case _:
             break
     clear()
 
-# бытьможнодельнымчеловекомидуматьокрасеногтей 27
-# коуегиаэюаигдйиаюги 27
+#цжсзьбоъяьсфзкьсхфьчфжфыфясзьсицхутлрчевэлэзузстфеьсфхуяфьчфэлэкфьуиоуресиэылрсевхесзтфьчцдкыъреуафюьляфйьсихеыфхсклдгъзьсиръфевюхъолтзьфясткскстсрьфйьвиурьутурчзутвфофыев
+#21 31 япомнючудноемгновеньепередомнойявиласьтыкакмимолетноевиденьекакгенийчистойкрасотывтомленьяхгрустибезнадежнойвтревогахшумнойсуетызвучалмнедолгоголоснежныйиснилисьмилыечерты

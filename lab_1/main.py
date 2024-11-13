@@ -1,6 +1,5 @@
 from function.encryption import *
 from os import system
-import sys
 
 
 def clear():
@@ -21,7 +20,11 @@ while True:
             print("Введите текст:")
             text = input()
             file = open("lab_1/encrypt.txt", "w", encoding="utf-8-sig")
-            file.write(str(encrypt(text, key)) + " " + str(key))
+            en = encrypt(text, key)
+            print("-------------------------------------------------------")
+            print(en)
+            print("-------------------------------------------------------")
+            file.write(str(en) + " " + str(key))
             file.close()
         case 2:
             clear()
@@ -30,18 +33,25 @@ while True:
             print("Введите текст:")
             text = input()
             file = open("lab_1/decipher.txt", "w", encoding="utf-8-sig")
-            file.write(str(decipher(text, key)) + " " + str(key))
+            dec = decipher(text, key)
+            file.write(str(dec) + " " + str(key))
+            print("-------------------------------------------------------")
+            print(dec)
+            print("-------------------------------------------------------")
             file.close()
         case 3:
             clear()
             print("Введите текст:")
             text = input()
             decipherWithoutKey(text)
+            print("-------------------------------------------------------")
+            print("Перебор ключа выведен в файл searchKey.txt")
+            print("-------------------------------------------------------")
         case 4:
             break
         case _:
             break
-    clear()
 
 # бытьможнодельнымчеловекомидуматьокрасеногтей 27
+# пушкиневгенийонегин
 # коуегиаэюаигдйиаюги 27

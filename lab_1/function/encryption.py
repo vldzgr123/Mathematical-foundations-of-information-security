@@ -27,7 +27,7 @@ def decipher(text: str, key: int) -> str:
 
 # Метод для дешифрования кейса без ключа (перебором)
 def decipherWithoutKey(text: str):
-    file = open("searchKey.txt", "w", encoding="utf-8-sig")
+    file = open("lab_1/searchKey.txt", "w", encoding="utf-8-sig")
     for key in range(32):
         decipherText = ""
         for let in text:
