@@ -1,4 +1,4 @@
-from gets import getLet, getNum, checkLet
+from function.gets import getLet, getNum, checkLet
 
 m = 32
 
@@ -78,40 +78,25 @@ def frequency_analysis(text) -> tuple:
 
 # Выдвижение предположений
 def hypothesis(text):
-    let_e = getNum("е")
-    let_o = getNum("о")
+    alphabet_most_frequency = "оеаитнсрмлвкдпуяызбгчйхжюшщэфцъь"
     most_pop_fir, most_pop_sec = frequency_analysis(text)[0]
+    print(len(alphabet_most_frequency))
     k = 1
-    res_one = comparison_solution_system(
-        a=let_e, b=getNum(most_pop_fir[0]), c=let_e, d=getNum(most_pop_sec[0])
-    )
-    res_two = comparison_solution_system(
-        a=let_o, b=getNum(most_pop_sec[0]), c=let_o, d=getNum(most_pop_fir[0])
-    )
-    if res_one == None or res_two == None:
-        print(
-            f'Предположение {k}:\nЕсли буквы "{most_pop_fir[0]}" и "{most_pop_sec[0]}" шифр-текста соответствуют буквам "e" и "o" открытого текста,\nто система не разрешима, следует выдвинуть другое предположение'
-        )
-    else:
-        print(
-            f'Предположение {k}:\nЕсли буквы "{most_pop_fir[0]}" и "{most_pop_sec[0]}" шифр-текста соответствуют буквам "e" и "o" открытого текста,\nто ключ шифрования равен либо {res_one}, либо {res_two}'
-        )
-        yield res_one, res_two
-    for i in range(let_e, m + let_e):
-        for j in range(i + 1, m + let_e):
+    for i in range(0, m):
+        for j in range(i + 1, m):
             res_one = comparison_solution_system(
-                a=i, b=getNum(most_pop_fir[0]), c=j, d=getNum(most_pop_sec[0])
+                a=getNum(alphabet_most_frequency[i]), b=getNum(most_pop_fir[0]), c=getNum(alphabet_most_frequency[j]), d=getNum(most_pop_sec[0])
             )
             res_two = comparison_solution_system(
-                a=i, b=getNum(most_pop_sec[0]), c=j, d=getNum(most_pop_fir[0])
+                a=getNum(alphabet_most_frequency[i]), b=getNum(most_pop_sec[0]), c=getNum(alphabet_most_frequency[j]), d=getNum(most_pop_fir[0])
             )
             if res_one == None or res_two == None:
                 print(
-                    f'Предположение {k}:\nЕсли буквы "{most_pop_fir[0]}" и "{most_pop_sec[0]}" шифр-текста соответствуют буквам "{getLet(i % 32)}" и "{getLet(j % 32)}" открытого текста,\nто система не разрешима, следует выдвинуть другое предположение'
+                    f'Предположение {k}:\nЕсли буквы "{most_pop_fir[0]}" и "{most_pop_sec[0]}" шифр-текста соответствуют буквам "{alphabet_most_frequency[i]}" и "{alphabet_most_frequency[j]}" открытого текста,\nто система не разрешима, следует выдвинуть другое предположение'
                 )
             else:
                 print(
-                    f'Предположение {k}:\nЕсли буквы "{most_pop_fir[0]}" и "{most_pop_sec[0]}" шифр-текста соответствуют буквам "{getLet(i % 32)}" и "{getLet(j % 32)}" открытого текста,\nто ключ шифрования равен либо {res_one}, либо {res_two}'
+                    f'Предположение {k}:\nЕсли буквы "{most_pop_fir[0]}" и "{most_pop_sec[0]}" шифр-текста соответствуют буквам "{alphabet_most_frequency[i]}" и "{alphabet_most_frequency[j]}" открытого текста,\nто ключ шифрования равен либо {res_one}, либо {res_two}'
                 )
                 yield res_one, res_two
             k += 1
@@ -155,14 +140,15 @@ def decipher_without_key(text):
         inp = input()
         if inp == "1":
             break
+    file.close()
 
 
-if __name__ == "__main__":
-    # most_pop_fir, most_pop_sec = frequency_analysis("фывфыфывфыв фыв фывф")[0]
-    # print(most_pop_fir[0])
-    # print(most_pop_sec)
-    print(
-        decipher_without_key(
-            "цжсзьбоъяьсфзкьсхфьчфжфыфясзьсицхутлрчевэлэзузстфеьсфхуяфьчфэлэкфьуиоуресиэылрсевхесзтфьчцдкыъреуафюьляфйьсихеыфхсклдгъзьсиръфевюхъолтзьфясткскстсрьфйьвиурьутурчзутвфофыев"
-        )
-    )
+# if __name__ == "__main__":
+#     # most_pop_fir, most_pop_sec = frequency_analysis("фывфыфывфыв фыв фывф")[0]
+#     # print(most_pop_fir[0])
+#     # print(most_pop_sec)
+#     print(
+#         decipher_without_key(
+#             "цжсзьбоъяьсфзкьсхфьчфжфыфясзьсицхутлрчевэлэзузстфеьсфхуяфьчфэлэкфьуиоуресиэылрсевхесзтфьчцдкыъреуафюьляфйьсихеыфхсклдгъзьсиръфевюхъолтзьфясткскстсрьфйьвиурьутурчзутвфофыев"
+#         )
+#     )
