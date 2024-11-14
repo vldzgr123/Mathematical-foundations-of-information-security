@@ -1,4 +1,4 @@
-from vocab import russian_codes_to_letters, russian_letter_codes
+from function.vocab import russian_codes_to_letters, russian_letter_codes
 
 def getNum(letter: str) -> int:
         return russian_letter_codes[letter]

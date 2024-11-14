@@ -54,7 +54,7 @@ def comparison_solution_system(a: int, b: int, c: int, d: int, m=m) -> str:
     result = comparison_solution(a=A, b=B, m=m)
     if result == None:
         return None
-    return [(x, (b - x * a) % 32) for x in result]
+    return [(x, (b - (x * a)) % m) for x in result]
 
 
 # Частотный анализ
@@ -80,15 +80,22 @@ def frequency_analysis(text) -> tuple:
 def hypothesis(text):
     alphabet_most_frequency = "оеаитнсрмлвкдпуяызбгчйхжюшщэфцъь"
     most_pop_fir, most_pop_sec = frequency_analysis(text)[0]
-    print(len(alphabet_most_frequency))
     k = 1
     for i in range(0, m):
         for j in range(i + 1, m):
             res_one = comparison_solution_system(
-                a=getNum(alphabet_most_frequency[i]), b=getNum(most_pop_fir[0]), c=getNum(alphabet_most_frequency[j]), d=getNum(most_pop_sec[0])
+                a=getNum(alphabet_most_frequency[i]),
+                b=getNum(most_pop_fir[0]),
+                c=getNum(alphabet_most_frequency[j]),
+                d=getNum(most_pop_sec[0]),
+                m=m,
             )
             res_two = comparison_solution_system(
-                a=getNum(alphabet_most_frequency[i]), b=getNum(most_pop_sec[0]), c=getNum(alphabet_most_frequency[j]), d=getNum(most_pop_fir[0])
+                a=getNum(alphabet_most_frequency[i]),
+                b=getNum(most_pop_sec[0]),
+                c=getNum(alphabet_most_frequency[j]),
+                d=getNum(most_pop_fir[0]),
+                m=m,
             )
             if res_one == None or res_two == None:
                 print(
@@ -103,19 +110,25 @@ def hypothesis(text):
 
 
 # Дешифровка симваола
-def decipher_let(symb : str, key):
+def decipher_let(symb: str, key):
     new_symb = symb
     if checkLet(symb):
         a_inv = inverse_modular(key[0])
-        new_symb = getLet((a_inv*getNum(symb) - key[1]) % m)
+        if a_inv == None:
+            return None
+        new_symb = getLet((a_inv * (getNum(symb) - key[1])) % m)
     return new_symb
 
 
 # Дешифровка текста с ключом
 def decipher(text, key) -> str:
+    text = text.lower().replace("ё", "е")
     decipher_text = ""
     for let in text:
-        decipher_text += decipher_let(let, key)
+        let = decipher_let(let, key)
+        if let == None:
+            return None
+        decipher_text += let
     return decipher_text
 
 
@@ -124,11 +137,14 @@ def decipher_without_key(text):
     hyps = hypothesis(text)
     file = open("lab_2/searchKey.txt", "w", encoding="utf-8-sig")
     for hyp in hyps:
+        decipher_text_fir = decipher(text, hyp[0][0])
+        decipher_text_sec = decipher(text, hyp[1][0])
+        if decipher_text_fir == None or decipher_text_sec == None:
+            print("Расшифровать текст нельзя")
+            continue
         print(
             "------------------------------------------------------------------------------"
         )
-        decipher_text_fir = decipher(text, hyp[0][0])
-        decipher_text_sec = decipher(text, hyp[1][0])
         print(f"Первый ключ: {decipher_text_fir}")
         print(f"Второй ключ: {decipher_text_sec}")
         file.write(f"{decipher_text_fir} {hyp[0]}")
@@ -143,12 +159,17 @@ def decipher_without_key(text):
     file.close()
 
 
-# if __name__ == "__main__":
-#     # most_pop_fir, most_pop_sec = frequency_analysis("фывфыфывфыв фыв фывф")[0]
-#     # print(most_pop_fir[0])
-#     # print(most_pop_sec)
-#     print(
-#         decipher_without_key(
-#             "цжсзьбоъяьсфзкьсхфьчфжфыфясзьсицхутлрчевэлэзузстфеьсфхуяфьчфэлэкфьуиоуресиэылрсевхесзтфьчцдкыъреуафюьляфйьсихеыфхсклдгъзьсиръфевюхъолтзьфясткскстсрьфйьвиурьутурчзутвфофыев"
-#         )
-#     )
+if __name__ == "__main__":
+    # most_pop_fir, most_pop_sec = frequency_analysis("фывфыфывфыв фыв фывф")[0]
+    # print(most_pop_fir[0])
+    # print(most_pop_sec)
+    # print(
+    #     decipher_without_key(
+    #         "цжсзьбоъяьсфзкьсхфьчфжфыфясзьсицхутлрчевэлэзузстфеьсфхуяфьчфэлэкфьуиоуресиэылрсевхесзтфьчцдкыъреуафюьляфйьсихеыфхсклдгъзьсиръфевюхъолтзьфясткскстсрьфйьвиурьутурчзутвфофыев"
+    #     )
+    # )
+    print(
+        decipher_without_key(
+            "ртжпещкофпакоеэкблфпэяртжфутвелвкхпяэзрафпэяэтйвечлещгтэябклзщрфбкрвкомтрцакрыуеблвешвтщэяхгвеофбкуафоаяхфоырыщэяхкщэкжкоыоцшткхжфвщшфб"
+        )
+    )
