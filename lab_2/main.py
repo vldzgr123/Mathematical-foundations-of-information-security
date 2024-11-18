@@ -55,8 +55,9 @@ while True:
             clear()
             print("Введите текст:")
             text = input()
-            for i in range(m * (m-1)):
-                hypothesis(text)
+            hyps = hypothesis(text)
+            for hyp in hyps:
+                continue
             input()
         case 6:
             clear()
