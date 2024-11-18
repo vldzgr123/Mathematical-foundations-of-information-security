@@ -35,11 +35,12 @@ def calculate_entropy_normalized(text, k):
 
 def plot_entropy_vs_k(text, max_k):
     ks = range(1, max_k + 1)
-    entropies = [calculate_entropy_normalized(text, k) for k in ks]
-    print(entropies)
+    entropies = [calculate_entropy_kgrams(text, k) for k in ks]
+    entropies_norm = [calculate_entropy_normalized(text, k) for k in ks]
+    print(f'Hk(T): {entropies}\nHk(T)/k: {entropies_norm}')
 
     plt.figure(figsize=(8, 5))
-    plt.plot(ks, entropies, marker='o', linestyle='-', color='b')
+    plt.plot(ks, entropies_norm, marker='o', linestyle='-', color='b')
     plt.title("Зависимость H_k(T)/k от k")
     plt.xlabel("k (длина k-грамм)")
     plt.ylabel("H_k(T)/k")
