@@ -33,18 +33,14 @@ while True:
             text = input("Введите текст: ")
             print(calculate_entropy_kgrams(text=text, k=k))
             input()
-        case 5:
-            clear()
-            k = int(input("Введите k: "))
-            text = input("Введите текст: ")
-            print(calculate_entropy_kgrams(text=text, k=k))
-            input()
         case 4:
             clear()
             k = int(input("Введите n: "))
             text = input("Введите текст: ")
             plot_entropy_vs_k(text, k)
             input()
+            break
+        case 5:
             break
         case _:
             break
