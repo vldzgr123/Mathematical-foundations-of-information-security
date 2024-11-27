@@ -1,48 +1,101 @@
 from os import system
+from function.encryption import *
+import tempfile
 
 
 def clear():
     system("cls||clear")
 
-p=None
-q=None
+
+path_key = "lab_4/keys.txt"
+p = None
+q = None
+keys = None
+clear()
+p, q = input_p_q()
 clear()
 while True:
-    print("1.Генерация ключей")
-    print("2.Получить частоты k-граммы")
-    print("3.Вычислить энтропию k-граммы")
-    print("4.Вычислить Hk(T)/k для k от 1 до n и вывести график зависимости Hk(T)/k от k")
-    print("5.Выход")
-    match (int(input())):
-        case 1:
+    print(f"p = {p}, q = {q}\nТекущие открытый и закрытый ключи соответственно: {keys}")
+    print(
+        "------------------------------------------------------------------------------------"
+    )
+    print("1.Заменить p и q")
+    print("2.Генерация ключей")
+    print("3.Выбрать ключ из сохраненных")
+    print("4.Зашифровать текст")
+    print("5.Расшифровать текст")
+    print("6.Выход")
+    match (input()):
+        case "1":
             clear()
-            p = int(input("Введите p: ")) 
-            q = int(input("Введите q: "))
-            
-            input()
-        case 2:
+            p, q = input_p_q()
             clear()
-            k = int(input("Введите k: "))
+        case "2":
+            clear()
+            file = open(path_key, mode="a")
+            e = input(
+                "Введите e (если хотите, чтобы е сгенерировалось - оставьте строку пустой): "
+            )
+            if e != "":
+                new_keys = get_keys(int(e), p, q)
+                if new_keys == None:
+                    print("Это e не удовлетворяет условию")
+                    input()
+                    continue
+                keys = new_keys
+                file.write(str(keys))
+                file.write("\n")
+            else:
+                inp = int()
+                gens = generate_keys(p, q)
+                for gen in gens:
+                    inp = input(
+                        "Выберите номер ключа (если хотите продолжить оставьте строку пустой): "
+                    )
+                    if inp != "":
+                        keys = gen[int(inp) - 1]
+                        file.write(str(keys) + "\n")
+                        break
+            file.close()
+            clear()
+        case "3":
+            clear()
+            file = open(path_key, mode="r")
+            file.seek(0)
+            lines = file.readlines()
+            for i in range(len(lines)):
+                print(f"{i+1}. {lines[i]}")
+            num = input("Выберите ключей: ")
+            if num == "" or len(lines) - 1 < int(num) - 1:
+                continue
+            keys = lines[int(num) - 1]
+            clear()
+        case "4":
+            clear()
+            if keys == None:
+                print("Отсутствуют ключ")
+                input()
+                continue
             text = input("Введите текст: ")
-            print(calculate_frequency_kgram(text=text, k=k))
+            print("Зашифрованный текст:")
+            print(encrypt_text(text=text, e=keys[0][0], n=keys[0][1]))
             input()
-        case 3:
             clear()
-            k = int(input("Введите k: "))
-            text = input("Введите текст: ")
-            print(calculate_entropy_kgrams(text=text, k=k))
-            input()
-        case 4:
+        case "5":
             clear()
-            k = int(input("Введите n: "))
+            if keys == None:
+                print("Отсутствуют ключ")
+                input()
+                continue
             text = input("Введите текст: ")
-            plot_entropy_vs_k(text, k)
+            print("Расшифрованный текст:")
+            print(decipher_text(text=text, d=keys[1][0], n=keys[1][1]).upper())
             input()
-            break
-        case 5:
+            clear()
+        case "6":
             break
         case _:
             break
     clear()
-
-#Я был разбужен спозаранку Щелчком оконного стекла. Размокшей каменной баранкой В воде Венеция плыла. Все было тихо, и, однако, Во сне я слышал крик, и он Подобьем смолкнувшего знака Еще тревожил небосклон.
+with open(path_key, "w"):
+    pass

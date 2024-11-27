@@ -1,4 +1,18 @@
 from function.gets import getLet, getNum, checkLet
+from math import sqrt
+from random import random
+from collections import deque
+
+
+def input_p_q():
+    while True:
+        p = int(input("Введите p: "))
+        q = int(input("Введите q: "))
+        if is_prime(p) and is_prime(q):
+            return p, q
+        else:
+            print("p или q не являются простыми")
+
 
 def gcd_ext(a: int, b: int) -> tuple:
     # Свойство НОД(a, 0) = a  a * 1 + 0 * 0 = a
@@ -12,6 +26,7 @@ def gcd_ext(a: int, b: int) -> tuple:
     y = x1 - (a // b) * y1
     return d, x, y
 
+
 def inverse_modular(a: int, m: int) -> int:
     d, x, y = gcd_ext(a, m)
     # Если НОД != 1, числа не взаимнопростые => число a не обратимо
@@ -20,6 +35,7 @@ def inverse_modular(a: int, m: int) -> int:
     else:
         return x % m
 
+
 def is_prime(n):
     if n <= 1:
         return False
@@ -27,23 +43,115 @@ def is_prime(n):
         return True
     if n % 2 == 0:
         return False
-    for i in range(3, int(n**0.5)+1, 2):
+    for i in range(3, int(n**0.5) + 1, 2):
         if n % i == 0:
             return False
-        return True 
+        return True
 
-def generate_keys(p: int, q: int):
-    if not (is_prime(p) or is_prime(q)): return None
+
+def pow(a, n, m):
+    res = 1
+    mult = a
+    while n != 0:
+        if n % 2 == 1:
+            res = (res * mult) % m
+        mult = (mult * mult) % m
+        n //= 2
+    return res
+
+
+def get_keys(e, p, q):
+    m = (p - 1) * (q - 1)
+    if gcd_ext(e, m)[0] != 1:
+        return None
     n = p * q
-    fin = (p - 1) * (q - 1)
-    e = 1
-    keys = []
-    while len(keys) < 3:
-        d = inverse_modular(e, fin)
-        if d != None:
-            keys.append((e, n))
-            keys.append((d, n))
-        e += 1
-            
-    
+    d = inverse_modular(e, m)
+    print(f"Открытый ключ: ({e}, {n})\nЗакрытый ключ: ({d}, {n})")
+    return (e, n), (d, n)
 
+
+def generate_e(p, q):
+    m = (p - 1) * (q - 1)
+    return [e for e in range(1, m) if gcd_ext(e, m)[0] == 1]
+
+
+def generate_keys(p, q):
+    res = []
+    es = generate_e(p, q)
+    for e in es:
+        print(f"Ключ №{len(res)+1}")
+        keys = get_keys(e, p, q)
+        res.append(keys)
+        if len(res) == 3:
+            yield res
+            res = []
+    print("Ключей больше нет.")
+
+
+def preprocces_text(text: str) -> str:
+    return text.upper()
+
+
+def coding_text(text: str):
+    code_text = ""
+    for let in text:
+        if checkLet(let):
+            code_text += str(getNum(let))
+    return code_text
+
+
+def split_blocks(text, n):
+    code_text = deque(text)
+    blocks = []
+    next_code = ""
+    code = ""
+    block = []
+    while True:
+        try:
+            block = code_text.popleft()
+            while True:
+                code = code_text.popleft()
+                block += code
+                if int(block) > n:
+                    block = block[:-1]
+                    code_text.appendleft(code)
+                    break
+            next_code = code_text.popleft()
+            if next_code == "0":
+                block = block[:-1]
+                code_text.appendleft(next_code)
+                code_text.appendleft(code)
+            else:
+                code_text.appendleft(next_code)
+            blocks.append(int(block))
+        except:
+            if len(block) != 0:
+                blocks.append(int(block))
+            break
+    print(f"Блоки: {blocks}")
+    return blocks
+
+
+def encrypt_text(text, e, n):
+    coded_text = coding_text(text=text)
+    preproccesed_text = preprocces_text(coded_text)
+    blocks = split_blocks(preproccesed_text, n)
+    encrypt_blocks = "".join([str(pow(block, e, n)) for block in blocks])
+    return encrypt_blocks
+
+
+def decipher_text(text, d, n):
+    blocks = split_blocks(text, n)
+    decipher_blocks = "".join([str(pow(block, d, n)) for block in blocks])
+    decipher_text = ""
+    for i in range(0, len(decipher_blocks), 2):
+        decipher_text += getLet(int(decipher_blocks[i : i + 2]))
+    return decipher_text
+
+
+if __name__ == "__main__":
+    # a = "Вася молодец"
+    # a = preprocces_text(a)
+    # split_blocks(a, 22213)
+    key = generate_e(103, 239)
+    print(key)
