@@ -14,6 +14,8 @@ keys = None
 clear()
 p, q = input_p_q()
 clear()
+with open(path_key, "w"):
+    pass
 while True:
     print(f"p = {p}, q = {q}\nТекущие открытый и закрытый ключи соответственно: {keys}")
     print(
@@ -29,6 +31,7 @@ while True:
         case "1":
             clear()
             p, q = input_p_q()
+            keys = None
             clear()
         case "2":
             clear()
@@ -68,7 +71,14 @@ while True:
             num = input("Выберите ключей: ")
             if num == "" or len(lines) - 1 < int(num) - 1:
                 continue
-            keys = lines[int(num) - 1]
+            keys = (
+                lines[int(num) - 1]
+                .replace("(", "")
+                .replace(")", "")
+                .replace(",", "")
+                .split(" ")
+            )
+            keys = ((int(keys[0]), int(keys[1])), (int(keys[2]), int(keys[3])))
             clear()
         case "4":
             clear()
@@ -77,20 +87,40 @@ while True:
                 input()
                 continue
             text = input("Введите текст: ")
-            print("Зашифрованный текст:")
-            print(encrypt_text(text=text, e=keys[0][0], n=keys[0][1]))
-            input()
+            blocks = encrypt_text(text=text, e=keys[0][0], n=p * q)
+            print(f"Зашифрованные блоки: {blocks}")
+            file = open("lab_4/block.txt", "w")
+            file.write(" ".join([str(x) for x in blocks]))
+            inp = input("Напишите 1 чтобы расшифровать обратно: ")
+            if inp == "1":
+                text = decipher_text(blocks=blocks, d=keys[1][0], n=p * q).upper()
+                input()
+            file.close()
             clear()
         case "5":
             clear()
             if keys == None:
-                print("Отсутствуют ключ")
+                print("Отсутствует ключ")
                 input()
                 continue
-            text = input("Введите текст: ")
+            inp = input("Введите, 1 чтобы прочитать блоки записанные в файл: ")
+            file = open("lab_4/block.txt", "r")
+            if inp == '1':
+                text = file.read()
+            else:
+                text = input("Введите блоки через пробел: ")
+            text = text.split(" ")
+            print(text)
+            print(text)
+            print(text)
             print("Расшифрованный текст:")
-            print(decipher_text(text=text, d=keys[1][0], n=keys[1][1]).upper())
+            print(
+                decipher_text(
+                    blocks=[int(x) for x in text], d=keys[1][0], n=p * q
+                ).upper()
+            )
             input()
+            file.close()
             clear()
         case "6":
             break
@@ -99,3 +129,4 @@ while True:
     clear()
 with open(path_key, "w"):
     pass
+# 103 239

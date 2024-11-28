@@ -1,9 +1,10 @@
 from function.gets import getLet, getNum, checkLet
 from math import sqrt
-from random import random
+from random import randint
 from collections import deque
 
 
+# fi(n)-1
 def input_p_q():
     while True:
         p = int(input("Введите p: "))
@@ -71,8 +72,11 @@ def get_keys(e, p, q):
 
 
 def generate_e(p, q):
-    m = (p - 1) * (q - 1)
-    return [e for e in range(1, m) if gcd_ext(e, m)[0] == 1]
+    phi = (p - 1) * (q - 1)
+    while True:
+        e = randint(2, phi - 1)
+        if gcd_ext(e, phi)[0] == 1:
+            yield e
 
 
 def generate_keys(p, q):
@@ -136,16 +140,18 @@ def encrypt_text(text, e, n):
     coded_text = coding_text(text=text)
     preproccesed_text = preprocces_text(coded_text)
     blocks = split_blocks(preproccesed_text, n)
-    encrypt_blocks = "".join([str(pow(block, e, n)) for block in blocks])
+    encrypt_blocks = [pow(block, e, n) for block in blocks]
     return encrypt_blocks
 
 
-def decipher_text(text, d, n):
-    blocks = split_blocks(text, n)
+def decipher_text(blocks, d, n):
     decipher_blocks = "".join([str(pow(block, d, n)) for block in blocks])
     decipher_text = ""
     for i in range(0, len(decipher_blocks), 2):
-        decipher_text += getLet(int(decipher_blocks[i : i + 2]))
+        try:
+            decipher_text += getLet(int(decipher_blocks[i : i + 2]))
+        except:
+            return None
     return decipher_text
 
 
