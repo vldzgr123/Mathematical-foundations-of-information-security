@@ -1,5 +1,5 @@
 from os import system
-from function.encryption import *
+from lab_6.function.factorize import *
 import tempfile
 
 

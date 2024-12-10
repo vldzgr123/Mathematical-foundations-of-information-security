@@ -1,35 +1,83 @@
-# from function.gets import getLet, getNum, checkLet
 import numpy as np
-from math import ceil
-
-
-file = open("lab_5/function/primes.txt", mode="r")
-primes_file = file.readline()
-file.close()
-
 
 def get_sieve(mod: int, num: int) -> np.ndarray:
     siave = np.zeros((3, mod), dtype=np.int32)
-    siave[0] = np.array([pow(x, 2, mod) for x in range(len(siave[0]))])
-    siave[1] = np.array([(pow(x, 2, mod) - num) % mod for x in range(len(siave[0]))])
+    siave[0] = np.array([pow_modular(x, 2, mod) for x in range(len(siave[0]))])
+    siave[1] = np.array(
+        [(pow_modular(x, 2, mod) - num) % mod for x in range(len(siave[0]))]
+    )
     siave[2] = np.array([1 if x in siave[0] else 0 for x in siave[1]])
-    print(siave)
+    return siave
 
 
-def sqrt(m: int) -> int:
+def move_sieve(sieve_s: np.ndarray, num: int, m: int) -> np.ndarray:
+    index = (sqrt(num) + 1) % m
+    return np.concatenate([sieve_s[index:], sieve_s[:index]])
+
+
+def sqrt(m: int):
     if m <= 0:
         return None
     x = m
     while True:
-        y = int((x + int(m / x)) >> 1)
+        y = int(int(x + int(m / x)) >> 1)
         if y < x:
             x = y
         else:
             return x
 
 
-def get_interval(m):
-    return [sqrt(m) + 1, (m + 1) / 2]
+def get_interval(m) -> np.ndarray:
+    return np.array([int(sqrt(m) + 1), int((m + 1) / 2)])
+
+
+def yield_sieve(sieves, max_len, max_len_sieves):
+    k = 0
+    while True:
+        sieves = [
+            (
+                np.concatenate([np.array(sieve), np.array(sieve)])
+                if len(sieve) < max_len_sieves * (k + 1)
+                else sieve
+            )
+            for sieve in sieves
+        ]
+        if len(min(sieves, key=len)) >= max_len_sieves:
+            if max_len_sieves * (k + 1) >= max_len:
+                return [
+                    sieve[max_len_sieves * k : max_len_sieves * (k + 1)]
+                    for sieve in sieves
+                ]
+            yield [
+                sieve[max_len_sieves * k : max_len_sieves * (k + 1)] for sieve in sieves
+            ]
+            k += 1
+
+
+def factorize(num: int, a: int, b: int, c: int):
+    sieve_a = move_sieve(get_sieve(a, num)[2], num, a)
+    sieve_b = move_sieve(get_sieve(b, num)[2], num, b)
+    sieve_c = move_sieve(get_sieve(c, num)[2], num, c)
+    sieves = [sieve_a, sieve_b, sieve_c]
+    max_len_sieves = len(max(sieves, key=len))
+    interval = get_interval(num)
+    iterator_sieves = yield_sieve(sieves, interval[1] - interval[0] + 1, max_len_sieves)
+    k = interval[0]
+    for sieves in iterator_sieves:
+        sum_sieves = sum(sieves)
+        indexes = [key for key, value in enumerate(sum_sieves) if value==3]
+        for index in indexes:
+            n = int(k + index)
+            x = n
+            z = pow(x, 2) - num
+            if z==0:
+                continue
+            y = sqrt(z)
+            if pow(y, 2) == z:
+                p = x + y
+                q = x - y
+                return p, q
+        k += max_len_sieves
 
 
 # def gcd_ext(a: int, b: int) -> tuple:
@@ -111,13 +159,24 @@ def get_interval(m):
 #         return x % m
 
 
-def pow(a, n, m):
+def pow_modular(a, n, m):
     res = 1
     mult = a
     while n != 0:
         if n % 2 == 1:
             res = (res * mult) % m
         mult = (mult * mult) % m
+        n //= 2
+    return res
+
+
+def pow(a, n):
+    res = 1
+    mult = a
+    while n != 0:
+        if n % 2 == 1:
+            res = res * mult
+        mult = mult * mult
         n //= 2
     return res
 
@@ -149,4 +208,4 @@ if __name__ == "__main__":
     # file = open("lab_5/function/primes.txt", mode="w")
     # for prime in primerange(0, 1000):
     #     file.write(f"{prime} ")
-    print(sqrt(50))
+    print(factorize(num=667, a=3, b=5, c=7))
