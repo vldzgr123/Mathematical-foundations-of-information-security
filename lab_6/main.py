@@ -1,90 +1,56 @@
 from os import system
-from lab_6.function.factorize import *
-import tempfile
+from function.factorize import *
 
 
 def clear():
     system("cls||clear")
 
-
-path_key = "lab_4/keys.txt"
-p = None
-q = None
-keys = None
+clear()
 while True:
-    print(f"p = {p}, q = {q}\nТекущие открытый и закрытый ключи соответственно: {keys}")
-    print(
-        "------------------------------------------------------------------------------------"
-    )
-    print("1.Факторизовать число")
-    print("2.Определение закрытого ключа")
-    print("3.Расшифровать текст")
-    print("4.Выход")
+    print("1.Факторизовать число методом квадратичного решета.")
+    print("2.Факторизовать число ро-методом.")
+    print("3.Выход")
     match (input()):
         case "1":
             clear()
-            num = int(input("Введите число: "))
-            if is_prime(num):
-                print("Это число простое")
+            m = int(input("Введите m: "))
+            while True:
+                abc = [
+                    int(x) for x in input("Введите a, b, c через пробел: ").split(" ")
+                ]
+                print(abc)
+                if (
+                    gcd_ext(abc[0], abc[1])[0] != 1
+                    or gcd_ext(abc[0], abc[2])[0] != 1
+                    or gcd_ext(abc[1], abc[2])[0] != 1
+                ):
+                    print("Введены некорректные значения")
+                    continue
+                break
+            mults = factorize_sieve(m, abc[0], abc[1], abc[2])
+            if mults == None:
+                print("Данное m простое")
             else:
-                facts = factorize(num)
-                print(facts)
+                print(f"{m} = {mults[0]} * {mults[1]}")
             input()
             clear()
         case "2":
             clear()
-            inp = input("Введите 1, чтобы прочитать (e, n) из файла: ")
-            if inp == "1":
-                file = open("lab_5/key.txt", mode="r")
-                e, n = [int(x) for x in file.readline().split(" ")]
-                facts = factorize(n)
-                p, q = facts.keys()
-                file.close()
-            else:
-                while True:
-                    clear()
-                    n = int(input("Введите n: "))
-                    facts = factorize(n)
-                    if len(facts) != 2 and all(value==1 for value in facts.values()):
-                        print("Некорректное n.")
-                        continue
-                    p, q = facts.keys()
-                    break
-                while True:
-                    e = int(input("Введите e: "))
-                    if gcd_ext(e, (p-1)*(q-1))[0] != 1:
-                        print("Некорректное e.")
-                        continue
-                    break
-            keys = get_keys(e, p, q)
+            m = int(input("Введите m: "))
+            x0_1, x0_2 = [
+                int(x) for x in input("Введите x0_1 и x0_2 через пробел: ").split(" ")
+            ]
+            try:
+                mults = factorize_ro(m, x0_1, x0_2)
+                print(
+                    f"На {mults[1]} шаге алгоритма получено значение d{mults[1]}={mults[0][0]}\nОтвет: {m}={mults[0][0]}*{mults[0][1]}"
+                )
+            except:
+                print("Данное m простое")
             input()
             clear()
         case "3":
             clear()
-            if keys == None:
-                print("Отсутствует ключ")
-                input()
-                continue
-            inp = input("Введите, 1 чтобы прочитать блоки записанные в файл: ")
-            file = open("lab_5/block.txt", "r")
-            if inp == '1':
-                text = file.readline()
-            else:
-                text = input("Введите блоки через пробел: ")
-            text = text.split(" ")
-            try:
-                print("Расшифрованный текст:")
-                print(
-                    decipher_text(
-                        blocks=[int(x) for x in text], d=keys[1][0], n=p * q
-                    ).upper()
-                )
-            except:
-                print("Данный блок не удается интерпретировать")
-            input()
-            file.close()
-            clear()
-        case "4":
             break
         case _:
             break

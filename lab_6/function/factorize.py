@@ -1,5 +1,5 @@
 import numpy as np
-
+  
 def get_sieve(mod: int, num: int) -> np.ndarray:
     siave = np.zeros((3, mod), dtype=np.int32)
     siave[0] = np.array([pow_modular(x, 2, mod) for x in range(len(siave[0]))])
@@ -109,6 +109,18 @@ def factorize_ro(m, x0_1, x0_2):
         if dk > 1 and dk < m:
             return (dk, m // dk), n
         n += 1
+
+def is_prime(n):
+    if n <= 1:
+        return False
+    if n == 2:
+        return True
+    if n % 2 == 0:
+        return False
+    for i in range(3, int(n**0.5) + 1, 2):
+        if n % i == 0:
+            return False
+    return True
 
 
 def gcd_ext(a: int, b: int) -> tuple:
