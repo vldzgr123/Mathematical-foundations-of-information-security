@@ -54,7 +54,7 @@ def yield_sieve(sieves, max_len, max_len_sieves):
             k += 1
 
 
-def factorize(num: int, a: int, b: int, c: int):
+def factorize_sieve(num: int, a: int, b: int, c: int):
     sieve_a = move_sieve(get_sieve(a, num)[2], num, a)
     sieve_b = move_sieve(get_sieve(b, num)[2], num, b)
     sieve_c = move_sieve(get_sieve(c, num)[2], num, c)
@@ -65,12 +65,12 @@ def factorize(num: int, a: int, b: int, c: int):
     k = interval[0]
     for sieves in iterator_sieves:
         sum_sieves = sum(sieves)
-        indexes = [key for key, value in enumerate(sum_sieves) if value==3]
+        indexes = [key for key, value in enumerate(sum_sieves) if value == 3]
         for index in indexes:
             n = int(k + index)
             x = n
             z = pow(x, 2) - num
-            if z==0:
+            if z == 0:
                 continue
             y = sqrt(z)
             if pow(y, 2) == z:
@@ -80,83 +80,48 @@ def factorize(num: int, a: int, b: int, c: int):
         k += max_len_sieves
 
 
-# def gcd_ext(a: int, b: int) -> tuple:
-#     # Свойство НОД(a, 0) = a  a * 1 + 0 * 0 = a
-#     if b == 0:
-#         return a, 1, 0
-#     # Свойство НОД(a, b) = НОД(a%b, b), при a >= b > 0
-#     # Проверка для условия не нужно, так как если b > a,
-#     # то после первой итерации числа сами поменяются местами
-#     d, x1, y1 = gcd_ext(b, a % b)
-#     x = y1
-#     y = x1 - (a // b) * y1
-#     return d, x, y
+def f(x, m):
+    return (pow_modular(x, 2, m) + 1) % m
 
 
-# def prime_iterator():
-#     for prime in primes_file.split(" "):
-#         yield int(prime)
+def xn_1(n, x0, m):
+    if n == 0:
+        return x0
+    else:
+        return f(xn_1(n - 1, x0, m), m)
 
 
-# def q_iterator(n):
-#     q = [1, []]
-#     n_sqrt = sqrt(n)
-#     for p in prime_iterator():
-#         q[0] *= p
-#         q[1].append(p)
-#         if p * q[0] >= n_sqrt or len(q[1]) == 3:
-#             yield q
-#             q = [1, []]
+def xn_2(n, x0, m):
+    if n == 0:
+        return x0
+    else:
+        return f(f(xn_2(n - 1, x0, m), m), m)
 
 
-# def fill_dict_primes(mults: dict, primes):
-#     for prime in primes:
-#         if prime not in mults.keys():
-#             mults[prime] = 0
-#     return mults
+def factorize_ro(m, x0_1, x0_2):
+    n = 0
+    while True:
+        xk_1 = xn_1(n, x0_1, m)
+        xk_2 = xn_2(n, x0_2, m)
+        ak = abs(xk_1 - xk_2)
+        dk = gcd_ext(ak, m)[0]
+        print(f"Шаг №{n}: xn_1={xk_1}, xn_2={xk_2}, an={ak}, bn={dk}.")
+        if dk > 1 and dk < m:
+            return (dk, m // dk), n
+        n += 1
 
 
-# def is_prime(n):
-#     if n <= 1:
-#         return False
-#     if n == 2:
-#         return True
-#     if n % 2 == 0:
-#         return False
-#     for i in range(3, int(n**0.5) + 1, 2):
-#         if n % i == 0:
-#             return False
-#     return True
-
-
-# def factorize(n: int) -> dict:
-#     mults = {}
-#     for q in q_iterator(n):
-#         mults = fill_dict_primes(mults, q[1])
-#         while gcd_ext(q[0], n)[0] != 1:
-#             d = gcd_ext(q[0], n)[0]
-#             n /= d
-#             if is_prime(d):
-#                 mults[d] += 1
-#             else:
-#                 mults_simple = factorize(d)
-#                 primes = mults_simple.keys()
-#                 mults = fill_dict_primes(mults, primes)
-#                 for prime in primes:
-#                     mults[prime] += mults_simple[prime]
-#         if is_prime(n):
-#             mults[int(n)] = 1
-#             break
-#     return {key: value for key, value in mults.items() if value != 0}
-
-
-# def inverse_modular(a: int, m: int) -> int:
-#     d, x, y = gcd_ext(a, m)
-#     # Если НОД != 1, числа не взаимнопростые => число a не обратимо
-#     if d != 1:
-#         return None
-#     else:
-#         return x % m
+def gcd_ext(a: int, b: int) -> tuple:
+    # Свойство НОД(a, 0) = a  a * 1 + 0 * 0 = a
+    if b == 0:
+        return a, 1, 0
+    # Свойство НОД(a, b) = НОД(a%b, b), при a >= b > 0
+    # Проверка для условия не нужно, так как если b > a,
+    # то после первой итерации числа сами поменяются местами
+    d, x1, y1 = gcd_ext(b, a % b)
+    x = y1
+    y = x1 - (a // b) * y1
+    return d, x, y
 
 
 def pow_modular(a, n, m):
@@ -181,31 +146,10 @@ def pow(a, n):
     return res
 
 
-# def get_keys(e, p, q):
-#     m = (p - 1) * (q - 1)
-#     if gcd_ext(e, m)[0] != 1:
-#         return None
-#     n = p * q
-#     d = inverse_modular(e, m)
-#     print(f"Открытый ключ: ({e}, {n})\nЗакрытый ключ: ({d}, {n})")
-#     return (e, n), (d, n)
-
-
-# def decipher_text(blocks, d, n):
-#     decipher_blocks = "".join([str(pow(block, d, n)) for block in blocks])
-#     print(decipher_blocks)
-#     decipher_text = ""
-#     for i in range(0, len(decipher_blocks), 2):
-#         try:
-#             decipher_text += getLet(int(decipher_blocks[i : i + 2]))
-#         except:
-#             return None
-#     return decipher_text
-
-
 if __name__ == "__main__":
-    # from sympy import primerange
-    # file = open("lab_5/function/primes.txt", mode="w")
-    # for prime in primerange(0, 1000):
-    #     file.write(f"{prime} ")
-    print(factorize(num=667, a=3, b=5, c=7))
+    # print(xn_2(3, 2, 667))
+    factorize_ro(667, 2, 2)
+    # pow_modular(101, 2, 667)
+    # pow_modular(125, 2, 667)
+    # print(pow(101,2)%667)
+    # print(pow_modular(101,2,667))
