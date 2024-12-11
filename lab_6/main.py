@@ -55,6 +55,4 @@ while True:
         case _:
             break
     clear()
-# with open(path_key, "w"):
-#     pass
-# 103 239
+# 445051

@@ -1,0 +1,1 @@
+    print(discrete_logarithm(2, 18441, 30203))

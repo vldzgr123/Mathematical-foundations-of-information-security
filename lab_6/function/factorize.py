@@ -101,31 +101,19 @@ def xn_2(n, x0, m):
 def factorize_ro(m, x0_1, x0_2):
     n = 0
     x1_1 = xn_1(n, x0_1, m)
-    x2_2 = xn_2(n, x0_2, m)
-    print(f"Шаг №{n}: xn_1={xk_1}, xn_2={xk_2}, an= - , bn= - .")
+    x1_2 = xn_2(n, x0_2, m)
+    print(f"Шаг №{n}: xn_1={x1_1}, xn_2={x1_2}, an= - , bn= - .")
     while True:
         n += 1
         xk_1 = xn_1(n, x0_1, m)
         xk_2 = xn_2(n, x0_2, m)
-        if xk_1 == x1_1 and xk_2 == x2_2:
+        if xk_1 == x1_1 and xk_2 == x1_2:
             return None
         ak = abs(xk_1 - xk_2)
         dk = gcd_ext(ak, m)[0]
         print(f"Шаг №{n}: xn_1={xk_1}, xn_2={xk_2}, an={ak}, bn={dk}.")
         if dk > 1 and dk < m:
             return (dk, m // dk), n
-
-def is_prime(n):
-    if n <= 1:
-        return False
-    if n == 2:
-        return True
-    if n % 2 == 0:
-        return False
-    for i in range(3, int(n**0.5) + 1, 2):
-        if n % i == 0:
-            return False
-    return True
 
 
 def gcd_ext(a: int, b: int) -> tuple:
