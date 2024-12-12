@@ -6,6 +6,9 @@ def clear():
     system("cls||clear")
 
 
+params = [1, 1]
+x0_1, x0_2 = None
+
 clear()
 while True:
     print("1.Факторизовать число методом квадратичного решета.")
@@ -40,15 +43,67 @@ while True:
             x0_1, x0_2 = [
                 int(x) for x in input("Введите x0_1 и x0_2 через пробел: ").split(" ")
             ]
-            mults = factorize_ro(m, x0_1, x0_2)
-            if mults != None:
+            while True:
+                if params == [1, 1]:
+                    print("Текущая функция: f(x) = (x^2 + 1) mod m.")
+                else:
+                    if params[1] > 0:
+                        print(
+                            f"Текущая функция: f(x) = ({params[0]} * x^2 + {params[1]}) mod m."
+                        )
+                    if params[1] < 0:
+                        print(
+                            f"Текущая функция: f(x) = ({params[0]} * x^2 - {-params[1]}) mod m."
+                        )
+                    else:
+                        print(f"Текущая функция: f(x) = ({params[0]} * x^2) mod m.")
+                print(f"Текущие начальные значения: x0_1, x0_2 = {x0_1}, {x0_2}.")
+                print(f"m = {m}.")
+                print("Выберите дальнейшее действие:")
                 print(
-                    f"На {mults[1]} шаге алгоритма получено значение d{mults[1]}={mults[0][0]}\nОтвет: {m} = {mults[0][0]} * {mults[0][1]}"
+                    f"1. Начать поиск.\n2. Указать другие начальные значения.\n3. Указать параметры для функции ((Ax^2 + B) mod m) и выбрать новые начальные значения.\n4. Выйти в меню."
                 )
-            else:
-                print("Данное m простое")
-            input()
-            clear()
+                match (input()):
+                    case "1":
+                        clear()
+                        mults = factorize_ro(m, x0_1, x0_2, params)
+                        if mults != None:
+                            print(
+                                f"На {mults[1]} шаге алгоритма получено значение d{mults[1]}={mults[0][0]}\nОтвет: {m} = {mults[0][0]} * {mults[0][1]}"
+                            )
+                        else:
+                            print("Данное m простое или не подходит функции.")
+                        input()
+                        clear()
+                    case "2":
+                        clear()
+                        x0_1, x0_2 = [
+                            int(x)
+                            for x in input("Введите x0_1 и x0_2 через пробел: ").split(
+                                " "
+                            )
+                        ]
+                        clear()
+                    case "3":
+                        clear()
+                        params = [
+                            int(x)
+                            for x in input("Укажите A и B через пробел ((Ax^2 + B) mod m): ").split(
+                                " "
+                            )
+                        ]
+                        x0_1, x0_2 = [
+                            int(x)
+                            for x in input("Введите x0_1 и x0_2 через пробел: ").split(
+                                " "
+                            )
+                        ]
+                        clear()
+                    case "4":
+                        clear()
+                        break
+                    case _:
+                        break
         case "3":
             clear()
             break

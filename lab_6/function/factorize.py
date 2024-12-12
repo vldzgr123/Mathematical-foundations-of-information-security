@@ -16,7 +16,7 @@ def move_sieve(sieve_s: np.ndarray, num: int, m: int) -> np.ndarray:
 
 
 def sqrt(m: int):
-    if m <= 0:
+    if m < 0:
         return None
     x = m
     while True:
@@ -42,7 +42,7 @@ def yield_sieve(sieves, max_len, max_len_sieves):
             )
             for sieve in sieves
         ]
-        if len(min(sieves, key=len)) >= max_len_sieves:
+        if len(min(sieves, key=len)) >= max_len_sieves * (k+1):
             if max_len_sieves * (k + 1) >= max_len:
                 return [
                     sieve[max_len_sieves * k : max_len_sieves * (k + 1)]
@@ -55,6 +55,9 @@ def yield_sieve(sieves, max_len, max_len_sieves):
 
 
 def factorize_sieve(num: int, a: int, b: int, c: int):
+    x = sqrt(num)
+    if pow(x, 2) == num:
+        return x, x
     sieve_a = move_sieve(get_sieve(a, num)[2], num, a)
     sieve_b = move_sieve(get_sieve(b, num)[2], num, b)
     sieve_c = move_sieve(get_sieve(c, num)[2], num, c)
@@ -80,33 +83,36 @@ def factorize_sieve(num: int, a: int, b: int, c: int):
         k += max_len_sieves
 
 
-def f(x, m):
-    return (pow_modular(x, 2, m) + 1) % m
+def f(x, m, params):
+    return (params[0] * pow_modular(x, 2, m) + 1 * params[1]) % m
 
 
-def xn_1(n, x0, m):
+def xn_1(n, x0, m, params):
     if n == 0:
         return x0
     else:
-        return f(xn_1(n - 1, x0, m), m)
+        return f(xn_1(n - 1, x0, m, params), m, params)
 
 
-def xn_2(n, x0, m):
+def xn_2(n, x0, m, params):
     if n == 0:
         return x0
     else:
-        return f(f(xn_2(n - 1, x0, m), m), m)
+        return f(f(xn_2(n - 1, x0, m, params), m, params), m, params)
 
 
-def factorize_ro(m, x0_1, x0_2):
-    n = 0
-    x1_1 = xn_1(n, x0_1, m)
-    x1_2 = xn_2(n, x0_2, m)
-    print(f"Шаг №{n}: xn_1={x1_1}, xn_2={x1_2}, an= - , bn= - .")
+def factorize_ro(m, x0_1, x0_2, params):
+    print(f"Шаг №{0}: xn_1={x0_1}, xn_2={x0_2}, an= - , bn= - .")
+    n = 1
+    x1_1 = xn_1(n, x0_1, m, params)
+    x1_2 = xn_2(n, x0_2, m, params)
+    ak = abs(x1_1 - x1_2)
+    dk = gcd_ext(ak, m)[0]
+    print(f"Шаг №{n}: xn_1={x1_1}, xn_2={x1_2}, an={ak}, bn={dk}.")
     while True:
         n += 1
-        xk_1 = xn_1(n, x0_1, m)
-        xk_2 = xn_2(n, x0_2, m)
+        xk_1 = xn_1(n, x0_1, m, params)
+        xk_2 = xn_2(n, x0_2, m, params)
         if xk_1 == x1_1 and xk_2 == x1_2:
             return None
         ak = abs(xk_1 - xk_2)
@@ -153,7 +159,7 @@ def pow(a, n):
 
 if __name__ == "__main__":
     # print(xn_2(3, 2, 667))
-    factorize_ro(667, 2, 2)
+    print(factorize_sieve(25, 2, 3, 5))
     # pow_modular(101, 2, 667)
     # pow_modular(125, 2, 667)
     # print(pow(101,2)%667)
