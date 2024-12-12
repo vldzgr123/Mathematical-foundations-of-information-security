@@ -159,7 +159,7 @@ def pow(a, n):
 
 if __name__ == "__main__":
     # print(xn_2(3, 2, 667))
-    print(factorize_sieve(25, 2, 3, 5))
+    print(factorize_ro(25, 1, 1, [1,-1]))
     # pow_modular(101, 2, 667)
     # pow_modular(125, 2, 667)
     # print(pow(101,2)%667)

@@ -7,7 +7,7 @@ def clear():
 
 
 params = [1, 1]
-x0_1, x0_2 = None
+x0_1, x0_2 = None, None
 
 clear()
 while True:
@@ -46,6 +46,13 @@ while True:
             while True:
                 if params == [1, 1]:
                     print("Текущая функция: f(x) = (x^2 + 1) mod m.")
+                elif params[0] == 1:
+                    if params[1] > 0:
+                        print(f"Текущая функция: f(x) = (x^2 + {params[1]}) mod m.")
+                    if params[1] < 0:
+                        print(f"Текущая функция: f(x) = (x^2 - {-params[1]}) mod m.")
+                    else:
+                        print(f"Текущая функция: f(x) = (x^2) mod m.")
                 else:
                     if params[1] > 0:
                         print(
@@ -69,10 +76,12 @@ while True:
                         mults = factorize_ro(m, x0_1, x0_2, params)
                         if mults != None:
                             print(
-                                f"На {mults[1]} шаге алгоритма получено значение d{mults[1]}={mults[0][0]}\nОтвет: {m} = {mults[0][0]} * {mults[0][1]}"
+                                f"На {mults[1]} шаге алгоритма получено значение d_{mults[1]} = {mults[0][0]}\nОтвет: {m} = {mults[0][0]} * {mults[0][1]}"
                             )
                         else:
-                            print("Данное m простое или не подходит функции.")
+                            print(
+                                "Данное m простое или не подходит функции и начальные значения."
+                            )
                         input()
                         clear()
                     case "2":
@@ -88,9 +97,9 @@ while True:
                         clear()
                         params = [
                             int(x)
-                            for x in input("Укажите A и B через пробел ((Ax^2 + B) mod m): ").split(
-                                " "
-                            )
+                            for x in input(
+                                "Укажите A и B через пробел ((Ax^2 + B) mod m): "
+                            ).split(" ")
                         ]
                         x0_1, x0_2 = [
                             int(x)
