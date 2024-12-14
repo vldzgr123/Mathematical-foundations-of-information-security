@@ -1,5 +1,6 @@
 import numpy as np
-  
+
+
 def get_sieve(mod: int, num: int) -> np.ndarray:
     siave = np.zeros((3, mod), dtype=np.int32)
     siave[0] = np.array([pow_modular(x, 2, mod) for x in range(len(siave[0]))])
@@ -42,7 +43,7 @@ def yield_sieve(sieves, max_len, max_len_sieves):
             )
             for sieve in sieves
         ]
-        if len(min(sieves, key=len)) >= max_len_sieves * (k+1):
+        if len(min(sieves, key=len)) >= max_len_sieves * (k + 1):
             if max_len_sieves * (k + 1) >= max_len:
                 return [
                     sieve[max_len_sieves * k : max_len_sieves * (k + 1)]
@@ -109,6 +110,8 @@ def factorize_ro(m, x0_1, x0_2, params):
     ak = abs(x1_1 - x1_2)
     dk = gcd_ext(ak, m)[0]
     print(f"Шаг №{n}: xn_1={x1_1}, xn_2={x1_2}, an={ak}, bn={dk}.")
+    if dk > 1 and dk < m:
+        return (dk, m // dk), n
     while True:
         n += 1
         xk_1 = xn_1(n, x0_1, m, params)
@@ -159,7 +162,7 @@ def pow(a, n):
 
 if __name__ == "__main__":
     # print(xn_2(3, 2, 667))
-    print(factorize_ro(25, 1, 1, [1,-1]))
+    print(factorize_ro(25, 2, 2, [1, -1]))
     # pow_modular(101, 2, 667)
     # pow_modular(125, 2, 667)
     # print(pow(101,2)%667)
